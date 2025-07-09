@@ -1,4 +1,5 @@
 import Image from "next/image";
+import {Button} from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -24,6 +25,10 @@ export default function Home() {
             Save and see your changes instantly.
           </li>
         </ol>
+
+        <div className="flex flex-wrap items-center gap-2 md:flex-row">
+          <Button>Button</Button>
+        </div>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
