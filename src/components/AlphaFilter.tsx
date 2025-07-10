@@ -32,7 +32,7 @@ export default function AlphaFilterDropdown() {
 
     return (
         <div className="w-full md:w-1/3">
-            <Select onValueChange={handleSelect} value={selectedLetter}>
+            <Select key={reset.toString()} onValueChange={handleSelect} value={selectedLetter}>
                 <SelectTrigger>
                     <SelectValue placeholder="Filter by First Letter" />
                 </SelectTrigger>

@@ -11,12 +11,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import {useFilterReset} from "@/context/FilterContext";
 
 export default function FilterBar() {
     const dispatch = useAppDispatch()
     const [categories, setCategories] = useState<string[]>([])
     const [areas, setAreas] = useState<string[]>([])
     const [ingredients, setIngredients] = useState<string[]>([])
+    const { reset } = useFilterReset()
 
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
     const [selectedArea, setSelectedArea] = useState<string | undefined>()
@@ -37,6 +39,14 @@ export default function FilterBar() {
         fetchFilters()
     }, [])
 
+    useEffect(() => {
+        if (reset) {
+            setSelectedCategory(undefined)
+            setSelectedArea(undefined)
+            setSelectedIngredient(undefined)
+        }
+    }, [reset]);
+
     const handleFilter = async (type: string, value: string) => {
         const res = await axios.get(
             `https://www.themealdb.com/api/json/v1/1/filter.php?${type}=${value}`
@@ -44,18 +54,12 @@ export default function FilterBar() {
         dispatch(setRecipes(res.data.meals || []))
     }
 
-    const handleReset = () => {
-        setSelectedCategory(undefined)
-        setSelectedArea(undefined)
-        setSelectedIngredient(undefined)
-        dispatch(setRecipes([])) // clears Redux recipes
-    }
-
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Category */}
                 <Select
+                    key={`category-${reset}`}
                     value={selectedCategory}
                     onValueChange={(val) => {
                         setSelectedCategory(val)
@@ -76,6 +80,7 @@ export default function FilterBar() {
 
                 {/* Area */}
                 <Select
+                    key={`area-${reset}`}
                     value={selectedArea}
                     onValueChange={(val) => {
                         setSelectedArea(val)
@@ -96,6 +101,7 @@ export default function FilterBar() {
 
                 {/* Ingredient */}
                 <Select
+                    key={`ingredient-${reset}`}
                     value={selectedIngredient}
                     onValueChange={(val) => {
                         setSelectedIngredient(val)

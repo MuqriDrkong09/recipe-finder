@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useAppSelector, useAppDispatch } from '@/store/hooks'
 import { fetchRandomRecipes, setRecipes } from '@/store/slices/recipeSlice'
 import SearchBar from '@/components/SearchBar'
@@ -13,21 +13,16 @@ import { Button } from '@/components/ui/button'
 function HomeContent() {
     const dispatch = useAppDispatch()
     const { items, loading } = useAppSelector((state) => state.recipes)
-    const [page, setPage] = useState(1)
     const { triggerReset } = useFilterReset()
 
     useEffect(() => {
         if (items.length === 0) {
             dispatch(fetchRandomRecipes(15))
         }
-    }, [page, dispatch, items.length])
-
-    const handleNext = () => setPage((p) => p + 1)
-    const handlePrev = () => setPage((p) => (p > 1 ? p - 1 : 1))
+    }, [ dispatch, items.length])
 
     const handleResetAll = () => {
         dispatch(setRecipes([]))
-        setPage(1)
         triggerReset()
     }
 
@@ -41,7 +36,6 @@ function HomeContent() {
                     🔄 Reset All Filters
                 </Button>
             </div>
-
             <FilterBar />
             <AlphaFilterDropdown />
 
@@ -60,12 +54,10 @@ function HomeContent() {
                         ))}
                     </div>
 
-                    <div className="flex justify-center gap-4 pt-4">
-                        <Button onClick={handlePrev} disabled={page === 1}>
-                            Prev
+                    <div className="flex justify-center pt-6">
+                        <Button onClick={() => dispatch(fetchRandomRecipes(15))}>
+                            🔁 Show More Random Recipes
                         </Button>
-                        <span className="text-center py-2 px-4">Page {page}</span>
-                        <Button onClick={handleNext}>Next</Button>
                     </div>
                 </>
             )}
