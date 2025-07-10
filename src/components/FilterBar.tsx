@@ -11,7 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 
 export default function FilterBar() {
     const dispatch = useAppDispatch()
