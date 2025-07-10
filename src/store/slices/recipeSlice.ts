@@ -1,30 +1,47 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+// store/slices/recipeSlice.ts
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-export const fetchRecipes = createAsyncThunk(
-    'recipes/fetchRecipes',
-    async (query: string) => {
-        const res = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`)
-        return res.data.meals || []
+export const fetchRandomRecipes = createAsyncThunk(
+    'recipes/fetchRandomRecipes',
+    async (count: number = 9) => {
+        const requests = Array.from({ length: count }, () =>
+            axios.get('https://www.themealdb.com/api/json/v1/1/random.php')
+        )
+        const responses = await Promise.all(requests)
+        const meals = responses.map((res) => res.data.meals[0])
+        return meals
     }
 )
 
 const recipeSlice = createSlice({
     name: 'recipes',
-    initialState: { items: [], loading: false },
-    reducers: {},
+    initialState: {
+        items: [] as any[],
+        loading: false,
+    },
+    reducers: {
+        // ✅ Your custom reducer for setting recipe list from filters/search/etc.
+        setRecipes(state, action: PayloadAction<any[]>) {
+            state.items = action.payload
+            state.loading = false
+        },
+    },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchRecipes.pending, (state) => { state.loading = true })
-            .addCase(fetchRecipes.fulfilled, (state, action) => {
+            .addCase(fetchRandomRecipes.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(fetchRandomRecipes.fulfilled, (state, action) => {
                 state.items = action.payload
                 state.loading = false
             })
-            .addCase(fetchRecipes.rejected, (state) => {
+            .addCase(fetchRandomRecipes.rejected, (state) => {
                 state.loading = false
             })
-    }
+    },
 })
 
+// Export actions and reducer
+export const { setRecipes } = recipeSlice.actions
 export default recipeSlice.reducer
-
